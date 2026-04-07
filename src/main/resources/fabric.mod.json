@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "voidpocket",
+	"id": "vanish",
 	"version": "${version}",
-	"name": "The Void Pocket",
+	"name": "Vanish",
 	"description": "A lightweight inventory trash slot utility mod.",
 	"authors": [
 		"TM1988"
@@ -12,7 +12,7 @@
 		"sources": "https://github.com/TM1988/Vanish-MC"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/voidpocket/icon.png",
+	"icon": "assets/vanish/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -23,9 +23,9 @@
 		]
 	},
 	"mixins": [
-		"voidpocket.mixins.json",
+		"vanish.mixins.json",
 		{
-			"config": "voidpocket.client.mixins.json",
+			"config": "vanish.client.mixins.json",
 			"environment": "client"
 		}
 	],
