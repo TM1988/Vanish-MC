@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "voidpocket",
+	"version": "${version}",
+	"name": "The Void Pocket",
+	"description": "A lightweight inventory trash slot utility mod.",
+	"authors": [
+		"TM1988"
+	],
+	"contact": {
+		"homepage": "https://github.com/TM1988/Vanish-MC",
+		"sources": "https://github.com/TM1988/Vanish-MC"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/voidpocket/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.ExampleMod"
+		],
+		"client": [
+			"com.example.ExampleModClient"
+		]
+	},
+	"mixins": [
+		"voidpocket.mixins.json",
+		{
+			"config": "voidpocket.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.5",
+		"minecraft": "~26.1",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
