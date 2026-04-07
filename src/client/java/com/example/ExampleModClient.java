@@ -34,7 +34,7 @@ public class ExampleModClient implements ClientModInitializer {
 	private static boolean wasTKeyDown;
 	private static boolean wasDeleteKeyDown;
 	private static boolean inventoryPanelVisible;
-	private static ItemStack ghostTrashStack = ItemStack.EMPTY;
+	private static ItemStack trashSlotStack = ItemStack.EMPTY;
 
 	@Override
 	public void onInitializeClient() {
@@ -52,7 +52,7 @@ public class ExampleModClient implements ClientModInitializer {
 					if (tKeyDown && !wasTKeyDown) {
 						inventoryPanelVisible = !inventoryPanelVisible;
 						if (!inventoryPanelVisible) {
-							ghostTrashStack = ItemStack.EMPTY;
+							trashSlotStack = ItemStack.EMPTY;
 						}
 						sendHotkeyMessage(client, inventoryPanelVisible
 							? "[Vanish] Trash slot shown."
@@ -90,16 +90,16 @@ public class ExampleModClient implements ClientModInitializer {
 		return inventoryPanelVisible;
 	}
 
-	public static ItemStack getGhostTrashStack() {
-		return ghostTrashStack;
+	public static ItemStack getTrashSlotStack() {
+		return trashSlotStack;
 	}
 
-	public static void setGhostTrashStack(ItemStack stack) {
-		ghostTrashStack = stack.copy();
+	public static void setTrashSlotStack(ItemStack stack) {
+		trashSlotStack = stack.copy();
 	}
 
-	public static void clearGhostTrashStack() {
-		ghostTrashStack = ItemStack.EMPTY;
+	public static void clearTrashSlotStack() {
+		trashSlotStack = ItemStack.EMPTY;
 	}
 
 	private static boolean isBoundKeyCurrentlyDown(Minecraft client, KeyMapping keyMapping) {

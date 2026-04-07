@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(InventoryScreen.class)
 public class ExampleClientMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
-	private static final int TRASH_SLOT_X_OFFSET = 4;
+	private static final int TRASH_SLOT_X_OFFSET = 2;
 	private static final int TRASH_SLOT_Y_OFFSET = 130;
 	private static final int INVENTORY_WIDTH = 176;
 	private static final int INVENTORY_HEIGHT = 166;
@@ -32,12 +32,13 @@ public class ExampleClientMixin {
 		int slotX = leftPos + INVENTORY_WIDTH + TRASH_SLOT_X_OFFSET;
 		int slotY = topPos + TRASH_SLOT_Y_OFFSET;
 
-		drawTrashSlotBackground(extractor, slotX, slotY);
-		ItemStack ghostStack = ExampleModClient.getGhostTrashStack();
-		if (ghostStack.isEmpty()) {
+		drawTrashSlotFrame(extractor, leftPos, slotX, slotY);
+		ItemStack stack = ExampleModClient.getTrashSlotStack();
+		if (stack.isEmpty()) {
 			drawTrashCanIcon(extractor, slotX, slotY);
 		} else {
-			extractor.fakeItem(ghostStack, slotX + 1, slotY + 1);
+			extractor.fakeItem(stack, slotX + 1, slotY + 1);
+			extractor.itemDecorations(Minecraft.getInstance().font, stack, slotX + 1, slotY + 1);
 		}
 	}
 
@@ -64,8 +65,25 @@ public class ExampleClientMixin {
 
 		InventoryScreen screen = (InventoryScreen) (Object) this;
 		ItemStack carried = screen.getMenu().getCarried();
+		ItemStack slotStack = ExampleModClient.getTrashSlotStack();
+
 		if (!carried.isEmpty()) {
-			ExampleModClient.setGhostTrashStack(carried);
+			if (slotStack.isEmpty()) {
+				ExampleModClient.setTrashSlotStack(carried);
+				screen.getMenu().setCarried(ItemStack.EMPTY);
+			} else {
+				ExampleModClient.setTrashSlotStack(carried);
+				screen.getMenu().setCarried(slotStack.copy());
+			}
+			cir.setReturnValue(true);
+			return;
+		}
+
+		if (!slotStack.isEmpty()) {
+			screen.getMenu().setCarried(slotStack.copy());
+			ExampleModClient.clearTrashSlotStack();
+			cir.setReturnValue(true);
+			return;
 		}
 
 		cir.setReturnValue(true);
@@ -75,12 +93,23 @@ public class ExampleClientMixin {
 		return mouseX >= slotX && mouseX < slotX + slotSize && mouseY >= slotY && mouseY < slotY + slotSize;
 	}
 
-	private static void drawTrashSlotBackground(GuiGraphicsExtractor extractor, int x, int y) {
-		extractor.fill(x, y, x + TRASH_SLOT_SIZE, y + TRASH_SLOT_SIZE, 0xFF8B8B8B);
-		extractor.horizontalLine(x, x + TRASH_SLOT_SIZE - 1, y, 0xFFFFFFFF);
-		extractor.verticalLine(x, y, y + TRASH_SLOT_SIZE - 1, 0xFFFFFFFF);
-		extractor.horizontalLine(x, x + TRASH_SLOT_SIZE - 1, y + TRASH_SLOT_SIZE - 1, 0xFF373737);
-		extractor.verticalLine(x + TRASH_SLOT_SIZE - 1, y, y + TRASH_SLOT_SIZE - 1, 0xFF373737);
+	private static void drawTrashSlotFrame(GuiGraphicsExtractor extractor, int leftPos, int slotX, int slotY) {
+		int connectorX1 = leftPos + INVENTORY_WIDTH - 1;
+		int connectorY1 = slotY - 2;
+		int connectorX2 = slotX + TRASH_SLOT_SIZE;
+		int connectorY2 = slotY + TRASH_SLOT_SIZE + 2;
+
+		extractor.fill(connectorX1, connectorY1, connectorX2, connectorY2, 0xFFC6C6C6);
+		extractor.horizontalLine(connectorX1, connectorX2 - 1, connectorY1, 0xFFFFFFFF);
+		extractor.verticalLine(connectorX1, connectorY1, connectorY2 - 1, 0xFFFFFFFF);
+		extractor.horizontalLine(connectorX1, connectorX2 - 1, connectorY2 - 1, 0xFF555555);
+		extractor.verticalLine(connectorX2 - 1, connectorY1, connectorY2 - 1, 0xFF555555);
+
+		extractor.fill(slotX, slotY, slotX + TRASH_SLOT_SIZE, slotY + TRASH_SLOT_SIZE, 0xFF8B8B8B);
+		extractor.horizontalLine(slotX, slotX + TRASH_SLOT_SIZE - 1, slotY, 0xFFFFFFFF);
+		extractor.verticalLine(slotX, slotY, slotY + TRASH_SLOT_SIZE - 1, 0xFFFFFFFF);
+		extractor.horizontalLine(slotX, slotX + TRASH_SLOT_SIZE - 1, slotY + TRASH_SLOT_SIZE - 1, 0xFF373737);
+		extractor.verticalLine(slotX + TRASH_SLOT_SIZE - 1, slotY, slotY + TRASH_SLOT_SIZE - 1, 0xFF373737);
 	}
 
 	private static void drawTrashCanIcon(GuiGraphicsExtractor extractor, int slotX, int slotY) {
