@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 public class ExampleModClient implements ClientModInitializer {
@@ -33,6 +34,7 @@ public class ExampleModClient implements ClientModInitializer {
 	private static boolean wasTKeyDown;
 	private static boolean wasDeleteKeyDown;
 	private static boolean inventoryPanelVisible;
+	private static ItemStack ghostTrashStack = ItemStack.EMPTY;
 
 	@Override
 	public void onInitializeClient() {
@@ -49,9 +51,12 @@ public class ExampleModClient implements ClientModInitializer {
 				if (client.screen instanceof InventoryScreen) {
 					if (tKeyDown && !wasTKeyDown) {
 						inventoryPanelVisible = !inventoryPanelVisible;
+						if (!inventoryPanelVisible) {
+							ghostTrashStack = ItemStack.EMPTY;
+						}
 						sendHotkeyMessage(client, inventoryPanelVisible
-							? "[Vanish] Inventory side panel shown."
-							: "[Vanish] Inventory side panel hidden.");
+							? "[Vanish] Trash slot shown."
+							: "[Vanish] Trash slot hidden.");
 					}
 				}
 
@@ -83,6 +88,18 @@ public class ExampleModClient implements ClientModInitializer {
 
 	public static boolean isInventoryPanelVisible() {
 		return inventoryPanelVisible;
+	}
+
+	public static ItemStack getGhostTrashStack() {
+		return ghostTrashStack;
+	}
+
+	public static void setGhostTrashStack(ItemStack stack) {
+		ghostTrashStack = stack.copy();
+	}
+
+	public static void clearGhostTrashStack() {
+		ghostTrashStack = ItemStack.EMPTY;
 	}
 
 	private static boolean isBoundKeyCurrentlyDown(Minecraft client, KeyMapping keyMapping) {
