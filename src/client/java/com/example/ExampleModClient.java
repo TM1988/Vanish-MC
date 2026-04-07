@@ -5,7 +5,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -42,31 +41,18 @@ public class ExampleModClient implements ClientModInitializer {
 			client.execute(() -> sendJoinMessage(client));
 		});
 
-		ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			if (screen instanceof InventoryScreen) {
-				ScreenEvents.afterBackground(screen).register((currentScreen, extractor, mouseX, mouseY, tickDelta) -> {
-					if (!inventoryPanelVisible) {
-						return;
-					}
-
-					renderInventorySidePanel(extractor);
-				});
-			}
-		});
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			boolean tKeyDown = T_MESSAGE_KEY.isDown();
-			boolean deleteKeyDown = DELETE_MESSAGE_KEY.isDown();
+			boolean tKeyDown = isBoundKeyCurrentlyDown(client, T_MESSAGE_KEY);
+			boolean deleteKeyDown = isBoundKeyCurrentlyDown(client, DELETE_MESSAGE_KEY);
 
 			if (client.player != null) {
 				if (client.screen instanceof InventoryScreen) {
 					if (tKeyDown && !wasTKeyDown) {
 						inventoryPanelVisible = !inventoryPanelVisible;
+						sendHotkeyMessage(client, inventoryPanelVisible
+							? "[Vanish] Inventory side panel shown."
+							: "[Vanish] Inventory side panel hidden.");
 					}
-				}
-
-				if (tKeyDown && !wasTKeyDown) {
-					// Consume the rising edge outside the inventory too, so key state stays in sync.
 				}
 
 				if (deleteKeyDown && !wasDeleteKeyDown) {
@@ -95,17 +81,18 @@ public class ExampleModClient implements ClientModInitializer {
 		client.player.sendSystemMessage(Component.literal(message));
 	}
 
-	private static void renderInventorySidePanel(net.minecraft.client.gui.GuiGraphicsExtractor extractor) {
-		int inventoryWidth = 176;
-		int inventoryHeight = 166;
-		int leftPos = (extractor.guiWidth() - inventoryWidth) / 2;
-		int topPos = (extractor.guiHeight() - inventoryHeight) / 2;
+	public static boolean isInventoryPanelVisible() {
+		return inventoryPanelVisible;
+	}
 
-		int panelX1 = leftPos + inventoryWidth + 6;
-		int panelY1 = topPos;
-		int panelX2 = panelX1 + 54;
-		int panelY2 = topPos + inventoryHeight;
+	private static boolean isBoundKeyCurrentlyDown(Minecraft client, KeyMapping keyMapping) {
+		var window = client.getWindow();
+		InputConstants.Key key = KeyMappingHelper.getBoundKeyOf(keyMapping);
 
-		extractor.fill(panelX1, panelY1, panelX2, panelY2, 0xFFFFFFFF);
+		return switch (key.getType()) {
+			case KEYSYM, SCANCODE -> InputConstants.isKeyDown(window, key.getValue());
+			case MOUSE -> GLFW.glfwGetMouseButton(window.handle(), key.getValue()) == GLFW.GLFW_PRESS;
+			default -> false;
+		};
 	}
 }
