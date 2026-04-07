@@ -1,13 +1,13 @@
 package com.example.mixin.client;
 
 import com.example.ExampleModClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,21 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryScreen.class)
 public class ExampleClientMixin {
-	@Shadow
-	protected int leftPos;
-
-	@Shadow
-	protected int topPos;
-
-	@Shadow
-	protected int imageWidth;
-
-	@Shadow
-	protected int imageHeight;
-
 	private static final int TRASH_SLOT_SIZE = 18;
 	private static final int TRASH_SLOT_X_OFFSET = 4;
 	private static final int TRASH_SLOT_Y_OFFSET = 130;
+	private static final int INVENTORY_WIDTH = 176;
+	private static final int INVENTORY_HEIGHT = 166;
 
 	@Inject(method = "extractBackground", at = @At("TAIL"))
 	private void vanish$drawInventorySidePanel(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
@@ -37,7 +27,9 @@ public class ExampleClientMixin {
 			return;
 		}
 
-		int slotX = leftPos + imageWidth + TRASH_SLOT_X_OFFSET;
+		int leftPos = (extractor.guiWidth() - INVENTORY_WIDTH) / 2;
+		int topPos = (extractor.guiHeight() - INVENTORY_HEIGHT) / 2;
+		int slotX = leftPos + INVENTORY_WIDTH + TRASH_SLOT_X_OFFSET;
 		int slotY = topPos + TRASH_SLOT_Y_OFFSET;
 
 		drawTrashSlotBackground(extractor, slotX, slotY);
@@ -59,7 +51,12 @@ public class ExampleClientMixin {
 			return;
 		}
 
-		int slotX = leftPos + imageWidth + TRASH_SLOT_X_OFFSET;
+		Minecraft client = Minecraft.getInstance();
+		int guiWidth = client.getWindow().getGuiScaledWidth();
+		int guiHeight = client.getWindow().getGuiScaledHeight();
+		int leftPos = (guiWidth - INVENTORY_WIDTH) / 2;
+		int topPos = (guiHeight - INVENTORY_HEIGHT) / 2;
+		int slotX = leftPos + INVENTORY_WIDTH + TRASH_SLOT_X_OFFSET;
 		int slotY = topPos + TRASH_SLOT_Y_OFFSET;
 		if (!isInsideSlot(event.x(), event.y(), slotX, slotY, TRASH_SLOT_SIZE)) {
 			return;
