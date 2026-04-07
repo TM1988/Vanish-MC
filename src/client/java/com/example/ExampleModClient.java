@@ -28,6 +28,9 @@ public class ExampleModClient implements ClientModInitializer {
 		VANISH_CATEGORY
 	);
 
+	private static boolean wasTKeyDown;
+	private static boolean wasDeleteKeyDown;
+
 	@Override
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
@@ -36,13 +39,21 @@ public class ExampleModClient implements ClientModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (T_MESSAGE_KEY.consumeClick()) {
-				sendHotkeyMessage(client, "[Vanish] T key pressed.");
+			boolean tKeyDown = T_MESSAGE_KEY.isDown();
+			boolean deleteKeyDown = DELETE_MESSAGE_KEY.isDown();
+
+			if (client.player != null && client.screen == null) {
+				if (tKeyDown && !wasTKeyDown) {
+					sendHotkeyMessage(client, "[Vanish] T key pressed.");
+				}
+
+				if (deleteKeyDown && !wasDeleteKeyDown) {
+					sendHotkeyMessage(client, "[Vanish] Delete key pressed.");
+				}
 			}
 
-			while (DELETE_MESSAGE_KEY.consumeClick()) {
-				sendHotkeyMessage(client, "[Vanish] Delete key pressed.");
-			}
+			wasTKeyDown = tKeyDown;
+			wasDeleteKeyDown = deleteKeyDown;
 		});
 	}
 
