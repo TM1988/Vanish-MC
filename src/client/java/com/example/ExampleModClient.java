@@ -1,6 +1,7 @@
 package com.example;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.example.mixin.client.AbstractContainerScreenAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -10,10 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
 import org.lwjgl.glfw.GLFW;
 
 public class ExampleModClient implements ClientModInitializer {
+	private static final int TRASH_SLOT_INDEX = 46;
+
 	private static final KeyMapping.Category VANISH_CATEGORY =
 		KeyMapping.Category.register(Identifier.fromNamespaceAndPath("vanish", "general"));
 
@@ -34,7 +38,6 @@ public class ExampleModClient implements ClientModInitializer {
 	private static boolean wasTKeyDown;
 	private static boolean wasDeleteKeyDown;
 	private static boolean inventoryPanelVisible;
-	private static ItemStack trashSlotStack = ItemStack.EMPTY;
 
 	@Override
 	public void onInitializeClient() {
@@ -51,9 +54,6 @@ public class ExampleModClient implements ClientModInitializer {
 				if (client.screen instanceof InventoryScreen) {
 					if (tKeyDown && !wasTKeyDown) {
 						inventoryPanelVisible = !inventoryPanelVisible;
-						if (!inventoryPanelVisible) {
-							trashSlotStack = ItemStack.EMPTY;
-						}
 						sendHotkeyMessage(client, inventoryPanelVisible
 							? "[Vanish] Trash slot shown."
 							: "[Vanish] Trash slot hidden.");
@@ -61,7 +61,9 @@ public class ExampleModClient implements ClientModInitializer {
 				}
 
 				if (deleteKeyDown && !wasDeleteKeyDown) {
-					sendHotkeyMessage(client, "[Vanish] Delete key pressed.");
+					if (!moveHoveredItemToTrash(client)) {
+						sendHotkeyMessage(client, "[Vanish] No item to trash.");
+					}
 				}
 			}
 
@@ -90,16 +92,21 @@ public class ExampleModClient implements ClientModInitializer {
 		return inventoryPanelVisible;
 	}
 
-	public static ItemStack getTrashSlotStack() {
-		return trashSlotStack;
-	}
+	private static boolean moveHoveredItemToTrash(Minecraft client) {
+		if (!(client.screen instanceof InventoryScreen screen) || client.player == null || client.gameMode == null) {
+			return false;
+		}
 
-	public static void setTrashSlotStack(ItemStack stack) {
-		trashSlotStack = stack.copy();
-	}
+		Slot hoveredSlot = ((AbstractContainerScreenAccessor) (Object) screen).vanish$getHoveredSlot();
+		if (hoveredSlot == null || hoveredSlot.index == TRASH_SLOT_INDEX || !hoveredSlot.hasItem()) {
+			return false;
+		}
 
-	public static void clearTrashSlotStack() {
-		trashSlotStack = ItemStack.EMPTY;
+		int containerId = screen.getMenu().containerId;
+		client.gameMode.handleContainerInput(containerId, hoveredSlot.index, 0, ContainerInput.PICKUP, client.player);
+		client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
+
+		return true;
 	}
 
 	private static boolean isBoundKeyCurrentlyDown(Minecraft client, KeyMapping keyMapping) {
