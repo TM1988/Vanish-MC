@@ -18,7 +18,7 @@ public class ExampleClientMixin {
 	private static final int TRASH_SLOT_INDEX = 46;
 	private static final int INVENTORY_WIDTH = 176;
 	private static final int INVENTORY_HEIGHT = 166;
-	private static final Identifier TRASH_SLOT_TEXTURE = Identifier.fromNamespaceAndPath("vanish", "textures/gui/B.png");
+	private static final Identifier TRASH_SLOT_TEXTURE = Identifier.fromNamespaceAndPath("vanish", "textures/gui/b.png");
 	private static final int TRASH_TEXTURE_SIZE = 2000;
 
 	@Inject(method = "extractBackground", at = @At("TAIL"))
