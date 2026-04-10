@@ -43,13 +43,13 @@ public class ExampleModClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			// World-scoped state: reset on new world connection.
-			inventoryPanelVisible = false;
+			setInventoryPanelVisible(false);
 			wasTKeyDown = false;
 			wasDeleteKeyDown = false;
 		});
 
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			inventoryPanelVisible = false;
+			setInventoryPanelVisible(false);
 			wasTKeyDown = false;
 			wasDeleteKeyDown = false;
 		});
@@ -61,7 +61,7 @@ public class ExampleModClient implements ClientModInitializer {
 			if (client.player != null) {
 				if (client.screen instanceof InventoryScreen) {
 					if (tKeyDown && !wasTKeyDown) {
-						inventoryPanelVisible = !inventoryPanelVisible;
+						setInventoryPanelVisible(!inventoryPanelVisible);
 					}
 				}
 
@@ -77,6 +77,11 @@ public class ExampleModClient implements ClientModInitializer {
 
 	public static boolean isInventoryPanelVisible() {
 		return inventoryPanelVisible;
+	}
+
+	private static void setInventoryPanelVisible(boolean visible) {
+		inventoryPanelVisible = visible;
+		VanishUiState.setInventoryPanelVisible(visible);
 	}
 
 	private static boolean moveHoveredItemToTrash(Minecraft client) {

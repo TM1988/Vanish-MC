@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.VanishUiState;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +29,12 @@ public class InventoryMenuMixin {
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void vanish$addTrashSlot(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {
-		((AbstractContainerMenuAccessor) (Object) this).vanish$invokeAddSlot(new Slot(vanish$trashContainer, 0, VANISH_TRASH_SLOT_X, VANISH_TRASH_SLOT_Y));
+		((AbstractContainerMenuAccessor) (Object) this).vanish$invokeAddSlot(new Slot(vanish$trashContainer, 0, VANISH_TRASH_SLOT_X, VANISH_TRASH_SLOT_Y) {
+			@Override
+			public boolean isActive() {
+				return VanishUiState.isInventoryPanelVisible();
+			}
+		});
 	}
 
 	@Inject(method = "removed", at = @At("TAIL"))

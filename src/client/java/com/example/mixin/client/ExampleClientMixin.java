@@ -15,11 +15,9 @@ public class ExampleClientMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
 	private static final int TRASH_SLOT_X = 176;
 	private static final int TRASH_SLOT_Y = 130;
-	private static final int TRASH_SLOT_INDEX = 46;
 	private static final int INVENTORY_WIDTH = 176;
 	private static final int INVENTORY_HEIGHT = 166;
-	private static final Identifier TRASH_SLOT_TEXTURE = Identifier.fromNamespaceAndPath("vanish", "textures/gui/b.png");
-	private static final int TRASH_TEXTURE_SIZE = 2000;
+	private static final Identifier TRASH_SLOT_TEXTURE = Identifier.fromNamespaceAndPath("vanish", "textures/gui/b_slot.png");
 
 	@Inject(method = "extractBackground", at = @At("TAIL"))
 	private void vanish$drawInventorySidePanel(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
@@ -32,7 +30,7 @@ public class ExampleClientMixin {
 		int slotX = leftPos + TRASH_SLOT_X;
 		int slotY = topPos + TRASH_SLOT_Y;
 
-		extractor.blit(TRASH_SLOT_TEXTURE, slotX, slotY, 0, 0, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE, TRASH_TEXTURE_SIZE, TRASH_TEXTURE_SIZE);
+		extractor.blit(TRASH_SLOT_TEXTURE, slotX, slotY, 0, 0, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE);
 
 		InventoryScreen screen = (InventoryScreen) (Object) this;
 		if (!(screen.getMenu() instanceof InventoryMenu)) {
