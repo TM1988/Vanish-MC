@@ -16,7 +16,6 @@ public class AbstractContainerScreenMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
 	private static final int TRASH_SLOT_X = 178;
 	private static final int TRASH_SLOT_Y = 130;
-	private static final int TRASH_SLOT_INDEX = 46;
 
 	@Inject(method = "hasClickedOutside", at = @At("HEAD"), cancellable = true)
 	private void vanish$includeTrashSlotAsInside(double mouseX, double mouseY, int leftPos, int topPos, CallbackInfoReturnable<Boolean> cir) {
@@ -36,7 +35,7 @@ public class AbstractContainerScreenMixin {
 	}
 
 	@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-	private void vanish$handleTrashSlotClick(MouseButtonEvent event, boolean dblClick, CallbackInfoReturnable<Boolean> cir) {
+	private void vanish$routeTrashSlotClick(MouseButtonEvent event, boolean dblClick, CallbackInfoReturnable<Boolean> cir) {
 		if (!ExampleModClient.isInventoryPanelVisible()) {
 			return;
 		}
@@ -61,7 +60,7 @@ public class AbstractContainerScreenMixin {
 		}
 
 		int button = event.button() == 1 ? 1 : 0;
-		client.gameMode.handleContainerInput(screen.getMenu().containerId, TRASH_SLOT_INDEX, button, ContainerInput.PICKUP, client.player);
+		client.gameMode.handleContainerInput(screen.getMenu().containerId, 46, button, ContainerInput.PICKUP, client.player);
 		cir.setReturnValue(true);
 	}
 }

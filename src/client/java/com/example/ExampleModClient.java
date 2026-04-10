@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.lwjgl.glfw.GLFW;
@@ -102,14 +103,20 @@ public class ExampleModClient implements ClientModInitializer {
 			return false;
 		}
 
+		int containerId = screen.getMenu().containerId;
 		if (hoveredSlot.index == TRASH_SLOT_INDEX) {
-			sendHotkeyMessage(client, "[Vanish] Hover a normal inventory item, not the trash slot.");
+			// If hovering trash slot itself, Delete clears that item.
+			client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
+			client.gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, client.player);
 			return true;
 		}
 
-		int containerId = screen.getMenu().containerId;
+		// Pick up hovered item.
 		client.gameMode.handleContainerInput(containerId, hoveredSlot.index, 0, ContainerInput.PICKUP, client.player);
+		// Place into trash slot. If trash already had an item, overwrite leaves old one on cursor.
 		client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
+		// Delete anything left on cursor (the overwritten old trash item).
+		client.gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, client.player);
 
 		return true;
 	}

@@ -28,34 +28,7 @@ public class InventoryMenuMixin {
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void vanish$addTrashSlot(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {
-		((AbstractContainerMenuAccessor) (Object) this).vanish$invokeAddSlot(new Slot(vanish$trashContainer, 0, VANISH_TRASH_SLOT_X, VANISH_TRASH_SLOT_Y) {
-			@Override
-			public ItemStack safeInsert(ItemStack incoming, int maxCount) {
-				if (incoming.isEmpty() || !this.mayPlace(incoming)) {
-					return incoming;
-				}
-
-				// Overwrite behavior: existing trash slot content is deleted.
-				if (this.hasItem()) {
-					this.set(ItemStack.EMPTY);
-				}
-
-				int toPlace = Math.min(Math.min(maxCount, incoming.getCount()), this.getMaxStackSize(incoming));
-				ItemStack placed = incoming.copy();
-				placed.setCount(toPlace);
-				this.set(placed);
-				incoming.shrink(toPlace);
-				return incoming;
-			}
-
-			@Override
-			public void setByPlayer(ItemStack stack, ItemStack previousStack) {
-				if (!stack.isEmpty() && this.hasItem()) {
-					this.set(ItemStack.EMPTY);
-				}
-				super.setByPlayer(stack, previousStack);
-			}
-		});
+		((AbstractContainerMenuAccessor) (Object) this).vanish$invokeAddSlot(new Slot(vanish$trashContainer, 0, VANISH_TRASH_SLOT_X, VANISH_TRASH_SLOT_Y));
 	}
 
 	@Inject(method = "removed", at = @At("TAIL"))
