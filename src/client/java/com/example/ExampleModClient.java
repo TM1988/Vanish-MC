@@ -98,8 +98,13 @@ public class ExampleModClient implements ClientModInitializer {
 		}
 
 		Slot hoveredSlot = ((AbstractContainerScreenAccessor) (Object) screen).vanish$getHoveredSlot();
-		if (hoveredSlot == null || hoveredSlot.index == TRASH_SLOT_INDEX || !hoveredSlot.hasItem()) {
+		if (hoveredSlot == null || !hoveredSlot.hasItem()) {
 			return false;
+		}
+
+		if (hoveredSlot.index == TRASH_SLOT_INDEX) {
+			sendHotkeyMessage(client, "[Vanish] Hover a normal inventory item, not the trash slot.");
+			return true;
 		}
 
 		int containerId = screen.getMenu().containerId;
