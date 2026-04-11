@@ -5,7 +5,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,28 +27,9 @@ public class AbstractContainerMenuMixin {
 		}
 
 		Slot trashSlot = menu.getSlot(VANISH_TRASH_SLOT_INDEX);
-		ItemStack carried = menu.getCarried();
-		ItemStack trashStack = trashSlot.getItem();
-
-		if (!carried.isEmpty()) {
-			if (!trashStack.isEmpty()) {
-				trashSlot.set(ItemStack.EMPTY);
-			}
-
-			int placedCount = Math.min(carried.getCount(), trashSlot.getMaxStackSize(carried));
-			ItemStack placed = carried.copy();
-			placed.setCount(placedCount);
-			trashSlot.set(placed);
-			carried.shrink(placedCount);
-			menu.setCarried(carried);
-			ci.cancel();
-			return;
-		}
-
-		if (!trashStack.isEmpty()) {
-			menu.setCarried(trashStack.copy());
-			trashSlot.set(ItemStack.EMPTY);
-			ci.cancel();
+		if (!menu.getCarried().isEmpty() && trashSlot.hasItem()) {
+			// Overwrite behavior: delete old trash item before vanilla places new carried stack.
+			trashSlot.setByPlayer(net.minecraft.world.item.ItemStack.EMPTY);
 		}
 	}
 }
