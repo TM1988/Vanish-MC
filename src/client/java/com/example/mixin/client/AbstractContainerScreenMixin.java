@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
-	private static final int TRASH_SLOT_X = 174;
+	private static final int TRASH_SLOT_X = 176;
 	private static final int TRASH_SLOT_Y = 130;
 	private static final int TRASH_SLOT_INDEX = 46;
 	private boolean vanish$consumeNextRelease;

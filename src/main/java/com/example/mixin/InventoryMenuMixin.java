@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InventoryMenu.class)
 public class InventoryMenuMixin {
 	@Unique
-	private static final int VANISH_TRASH_SLOT_X = 174;
+	private static final int VANISH_TRASH_SLOT_X = 176;
 
 	@Unique
 	private static final int VANISH_TRASH_SLOT_Y = 130;

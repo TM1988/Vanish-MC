@@ -91,9 +91,8 @@ public class ExampleModClient implements ClientModInitializer {
 
 		int containerId = screen.getMenu().containerId;
 		if (hoveredSlot.index == TRASH_SLOT_INDEX) {
-			// If hovering trash slot itself, Delete clears that item.
-			client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
-			client.gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, client.player);
+			// If hovering trash slot itself, send special clear action (right-pickup on empty cursor).
+			client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 1, ContainerInput.PICKUP, client.player);
 			return true;
 		}
 

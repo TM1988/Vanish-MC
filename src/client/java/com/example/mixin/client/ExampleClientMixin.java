@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InventoryScreen.class)
 public class ExampleClientMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
-	private static final int TRASH_SLOT_X = 174;
+	private static final int TRASH_SLOT_X = 176;
 	private static final int TRASH_SLOT_Y = 130;
 	private static final int TRASH_SLOT_INDEX = 46;
 	private static final int INVENTORY_WIDTH = 176;
@@ -32,7 +32,7 @@ public class ExampleClientMixin {
 		int slotY = topPos + TRASH_SLOT_Y;
 
 		drawConnectedPanel(extractor, leftPos, slotX, slotY);
-		extractor.blit(TRASH_SLOT_TEXTURE, slotX, slotY, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE, 0.0F, 0.0F, 2000.0F, 2000.0F);
+		extractor.blit(TRASH_SLOT_TEXTURE, slotX, slotY, TRASH_SLOT_SIZE, TRASH_SLOT_SIZE, 0.0F, 0.0F, 18.0F, 18.0F);
 
 		InventoryScreen screen = (InventoryScreen) (Object) this;
 		if (!(screen.getMenu() instanceof InventoryMenu)) {
