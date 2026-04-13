@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -43,8 +42,16 @@ public class ExampleModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			// Ensure UI work runs on the main client thread.
-			client.execute(() -> sendJoinMessage(client));
+			// World-scoped state: reset on new world connection.
+			inventoryPanelVisible = false;
+			wasTKeyDown = false;
+			wasDeleteKeyDown = false;
+		});
+
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			inventoryPanelVisible = false;
+			wasTKeyDown = false;
+			wasDeleteKeyDown = false;
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -55,38 +62,17 @@ public class ExampleModClient implements ClientModInitializer {
 				if (client.screen instanceof InventoryScreen) {
 					if (tKeyDown && !wasTKeyDown) {
 						inventoryPanelVisible = !inventoryPanelVisible;
-						sendHotkeyMessage(client, inventoryPanelVisible
-							? "[Vanish] Trash slot shown."
-							: "[Vanish] Trash slot hidden.");
 					}
 				}
 
 				if (deleteKeyDown && !wasDeleteKeyDown) {
-					if (!moveHoveredItemToTrash(client)) {
-						sendHotkeyMessage(client, "[Vanish] No item to trash.");
-					}
+					moveHoveredItemToTrash(client);
 				}
 			}
 
 			wasTKeyDown = tKeyDown;
 			wasDeleteKeyDown = deleteKeyDown;
 		});
-	}
-
-	private static void sendJoinMessage(Minecraft client) {
-		if (client.player == null) {
-			return;
-		}
-
-		client.player.sendSystemMessage(Component.literal("[Vanish] Test message: world loaded."));
-	}
-
-	private static void sendHotkeyMessage(Minecraft client, String message) {
-		if (client.player == null) {
-			return;
-		}
-
-		client.player.sendSystemMessage(Component.literal(message));
 	}
 
 	public static boolean isInventoryPanelVisible() {
