@@ -2,6 +2,7 @@ package com.tm1988.vanish;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.tm1988.vanish.mixin.client.AbstractContainerScreenAccessor;
+import java.util.Objects;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -9,6 +10,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -19,7 +22,7 @@ public class VanishClient implements ClientModInitializer {
 	private static final int TRASH_SLOT_INDEX = 46;
 
 	private static final KeyMapping.Category VANISH_CATEGORY =
-		KeyMapping.Category.register(Identifier.fromNamespaceAndPath("vanish", "general"));
+		Objects.requireNonNull(KeyMapping.Category.register(Identifier.fromNamespaceAndPath("vanish", "general")));
 
 	private static final KeyMapping TOGGLE_TRASH_SLOT_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 		"key.vanish.toggle_trash_slot",
@@ -84,7 +87,13 @@ public class VanishClient implements ClientModInitializer {
 	}
 
 	private static boolean moveHoveredItemToTrash(Minecraft client) {
-		if (!(client.screen instanceof InventoryScreen screen) || client.player == null || client.gameMode == null) {
+		if (!(client.screen instanceof InventoryScreen screen)) {
+			return false;
+		}
+
+		LocalPlayer player = client.player;
+		MultiPlayerGameMode gameMode = client.gameMode;
+		if (player == null || gameMode == null) {
 			return false;
 		}
 
@@ -95,20 +104,20 @@ public class VanishClient implements ClientModInitializer {
 
 		int containerId = screen.getMenu().containerId;
 		if (hoveredSlot.index == TRASH_SLOT_INDEX) {
-			client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 1, ContainerInput.PICKUP, client.player);
+			gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 1, ContainerInput.PICKUP, player);
 			return true;
 		}
 
-		client.gameMode.handleContainerInput(containerId, hoveredSlot.index, 0, ContainerInput.PICKUP, client.player);
-		client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
-		client.gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, client.player);
+		gameMode.handleContainerInput(containerId, hoveredSlot.index, 0, ContainerInput.PICKUP, player);
+		gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, player);
+		gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, player);
 
 		return true;
 	}
 
 	private static boolean isBoundKeyCurrentlyDown(Minecraft client, KeyMapping keyMapping) {
 		var window = client.getWindow();
-		InputConstants.Key key = KeyMappingHelper.getBoundKeyOf(keyMapping);
+		InputConstants.Key key = Objects.requireNonNull(KeyMappingHelper.getBoundKeyOf(keyMapping));
 
 		return switch (key.getType()) {
 			case KEYSYM, SCANCODE -> InputConstants.isKeyDown(window, key.getValue());

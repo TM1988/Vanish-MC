@@ -2,6 +2,8 @@ package com.tm1988.vanish.mixin.client;
 
 import com.tm1988.vanish.VanishClient;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -57,12 +59,14 @@ public class AbstractContainerScreenMixin {
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		if (client.player == null || client.gameMode == null) {
+		LocalPlayer player = client.player;
+		MultiPlayerGameMode gameMode = client.gameMode;
+		if (player == null || gameMode == null) {
 			return;
 		}
 
 		int button = event.button() == 1 ? 1 : 0;
-		client.gameMode.handleContainerInput(screen.getMenu().containerId, TRASH_SLOT_INDEX, button, ContainerInput.PICKUP, client.player);
+		gameMode.handleContainerInput(screen.getMenu().containerId, TRASH_SLOT_INDEX, button, ContainerInput.PICKUP, player);
 		vanish$consumeNextRelease = true;
 		cir.setReturnValue(true);
 	}
