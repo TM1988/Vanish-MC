@@ -1,7 +1,7 @@
-package com.example;
+package com.tm1988.vanish;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.example.mixin.client.AbstractContainerScreenAccessor;
+import com.tm1988.vanish.mixin.client.AbstractContainerScreenAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -15,21 +15,21 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.lwjgl.glfw.GLFW;
 
-public class ExampleModClient implements ClientModInitializer {
+public class VanishClient implements ClientModInitializer {
 	private static final int TRASH_SLOT_INDEX = 46;
 
 	private static final KeyMapping.Category VANISH_CATEGORY =
 		KeyMapping.Category.register(Identifier.fromNamespaceAndPath("vanish", "general"));
 
-	private static final KeyMapping T_MESSAGE_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-		"key.vanish.test_t",
+	private static final KeyMapping TOGGLE_TRASH_SLOT_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+		"key.vanish.toggle_trash_slot",
 		InputConstants.Type.KEYSYM,
 		GLFW.GLFW_KEY_T,
 		VANISH_CATEGORY
 	));
 
-	private static final KeyMapping DELETE_MESSAGE_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-		"key.vanish.test_delete",
+	private static final KeyMapping DELETE_HOVERED_ITEM_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+		"key.vanish.delete_hovered_item",
 		InputConstants.Type.KEYSYM,
 		GLFW.GLFW_KEY_DELETE,
 		VANISH_CATEGORY
@@ -42,7 +42,6 @@ public class ExampleModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			// World-scoped state: reset on new world connection.
 			setInventoryPanelVisible(false);
 			wasTKeyDown = false;
 			wasDeleteKeyDown = false;
@@ -55,8 +54,8 @@ public class ExampleModClient implements ClientModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			boolean tKeyDown = isBoundKeyCurrentlyDown(client, T_MESSAGE_KEY);
-			boolean deleteKeyDown = isBoundKeyCurrentlyDown(client, DELETE_MESSAGE_KEY);
+			boolean tKeyDown = isBoundKeyCurrentlyDown(client, TOGGLE_TRASH_SLOT_KEY);
+			boolean deleteKeyDown = isBoundKeyCurrentlyDown(client, DELETE_HOVERED_ITEM_KEY);
 
 			if (client.player != null) {
 				if (client.screen instanceof InventoryScreen) {
@@ -96,16 +95,12 @@ public class ExampleModClient implements ClientModInitializer {
 
 		int containerId = screen.getMenu().containerId;
 		if (hoveredSlot.index == TRASH_SLOT_INDEX) {
-			// If hovering trash slot itself, send special clear action (right-pickup on empty cursor).
 			client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 1, ContainerInput.PICKUP, client.player);
 			return true;
 		}
 
-		// Pick up hovered item.
 		client.gameMode.handleContainerInput(containerId, hoveredSlot.index, 0, ContainerInput.PICKUP, client.player);
-		// Place into trash slot. If trash already had an item, overwrite leaves old one on cursor.
 		client.gameMode.handleContainerInput(containerId, TRASH_SLOT_INDEX, 0, ContainerInput.PICKUP, client.player);
-		// Delete anything left on cursor (the overwritten old trash item).
 		client.gameMode.handleContainerInput(containerId, AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, 0, ContainerInput.PICKUP, client.player);
 
 		return true;

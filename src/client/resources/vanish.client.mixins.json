@@ -1,11 +1,11 @@
 {
 	"required": true,
-	"package": "com.example.mixin.client",
+	"package": "com.tm1988.vanish.mixin.client",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"AbstractContainerScreenAccessor",
 		"AbstractContainerScreenMixin",
-		"ExampleClientMixin"
+		"InventoryScreenTrashSlotMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

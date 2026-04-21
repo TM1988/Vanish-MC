@@ -1,4 +1,4 @@
-package com.example.mixin;
+package com.tm1988.vanish.mixin;
 
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;

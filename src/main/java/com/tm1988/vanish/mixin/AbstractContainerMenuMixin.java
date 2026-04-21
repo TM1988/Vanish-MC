@@ -1,4 +1,4 @@
-package com.example.mixin;
+package com.tm1988.vanish.mixin;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,13 +28,11 @@ public class AbstractContainerMenuMixin {
 
 		Slot trashSlot = menu.getSlot(VANISH_TRASH_SLOT_INDEX);
 		if (!menu.getCarried().isEmpty() && trashSlot.hasItem()) {
-			// Overwrite behavior: always delete old stack, even for same-item top-up attempts.
 			trashSlot.setByPlayer(net.minecraft.world.item.ItemStack.EMPTY);
 			return;
 		}
 
 		if (button == 1 && menu.getCarried().isEmpty() && trashSlot.hasItem()) {
-			// Special clear action used by Delete on hovered trash slot.
 			trashSlot.setByPlayer(net.minecraft.world.item.ItemStack.EMPTY);
 			ci.cancel();
 		}

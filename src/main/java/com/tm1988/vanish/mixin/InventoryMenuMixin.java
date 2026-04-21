@@ -1,6 +1,6 @@
-package com.example.mixin;
+package com.tm1988.vanish.mixin;
 
-import com.example.VanishUiState;
+import com.tm1988.vanish.VanishUiState;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

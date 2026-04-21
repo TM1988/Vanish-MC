@@ -1,6 +1,6 @@
-package com.example.mixin.client;
+package com.tm1988.vanish.mixin.client;
 
-import com.example.ExampleModClient;
+import com.tm1988.vanish.VanishClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -21,7 +21,7 @@ public class AbstractContainerScreenMixin {
 
 	@Inject(method = "hasClickedOutside", at = @At("HEAD"), cancellable = true)
 	private void vanish$includeTrashSlotAsInside(double mouseX, double mouseY, int leftPos, int topPos, CallbackInfoReturnable<Boolean> cir) {
-		if (!ExampleModClient.isInventoryPanelVisible()) {
+		if (!VanishClient.isInventoryPanelVisible()) {
 			return;
 		}
 
@@ -38,7 +38,7 @@ public class AbstractContainerScreenMixin {
 
 	@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
 	private void vanish$routeTrashSlotClick(MouseButtonEvent event, boolean dblClick, CallbackInfoReturnable<Boolean> cir) {
-		if (!ExampleModClient.isInventoryPanelVisible()) {
+		if (!VanishClient.isInventoryPanelVisible()) {
 			return;
 		}
 

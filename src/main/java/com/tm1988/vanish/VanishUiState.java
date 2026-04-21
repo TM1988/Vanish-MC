@@ -1,4 +1,4 @@
-package com.example;
+package com.tm1988.vanish;
 
 public final class VanishUiState {
 	private static volatile boolean inventoryPanelVisible;

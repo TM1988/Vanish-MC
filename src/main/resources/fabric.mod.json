@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.tm1988.vanish.VanishMod"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.tm1988.vanish.VanishClient"
 		]
 	},
 	"mixins": [

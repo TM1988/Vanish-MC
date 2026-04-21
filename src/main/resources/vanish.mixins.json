@@ -1,12 +1,11 @@
 {
 	"required": true,
-	"package": "com.example.mixin",
+	"package": "com.tm1988.vanish.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"AbstractContainerMenuMixin",
 		"AbstractContainerMenuAccessor",
-		"InventoryMenuMixin",
-		"ExampleMixin"
+		"InventoryMenuMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

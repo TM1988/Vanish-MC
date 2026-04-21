@@ -1,6 +1,6 @@
-package com.example.mixin.client;
+package com.tm1988.vanish.mixin.client;
 
-import com.example.ExampleModClient;
+import com.tm1988.vanish.VanishClient;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
-public class ExampleClientMixin {
+public class InventoryScreenTrashSlotMixin {
 	private static final int TRASH_SLOT_SIZE = 18;
 	private static final int TRASH_SLOT_X = 176;
 	private static final int TRASH_SLOT_Y = 130;
@@ -19,7 +19,7 @@ public class ExampleClientMixin {
 
 	@Inject(method = "extractBackground", at = @At("TAIL"))
 	private void vanish$drawInventorySidePanel(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
-		if (!ExampleModClient.isInventoryPanelVisible()) {
+		if (!VanishClient.isInventoryPanelVisible()) {
 			return;
 		}
 

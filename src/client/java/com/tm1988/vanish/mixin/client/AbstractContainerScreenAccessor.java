@@ -1,4 +1,4 @@
-package com.example.mixin.client;
+package com.tm1988.vanish.mixin.client;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
